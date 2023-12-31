@@ -7,16 +7,17 @@ using namespace std;
 
 int wordValue(string word);
 int findSecondDigit(string line);
-int day1_part1(string fileName);
-int day1_part2(string fileName);
+int day1_part1(ifstream& fileName);
+int day1_part2(ifstream& fileName);
 
-int main1() {
+int main() {
 	string calibrationDocumentName = "input.txt";
-	//ifstream calibrationDocument(calibrationDocumentName);
-	cout << "Calibration Value (Part 1): " << day1_part1(calibrationDocumentName) << endl;
-	cout << "Calibration Value (Part 2): " << day1_part2(calibrationDocumentName);
+	ifstream calibrationDocument(calibrationDocumentName);
+	cout << "Calibration Value (Part 1): " << day1_part1(calibrationDocument) << endl;
+	calibrationDocument.seekg(0, ios::beg);
+	cout << "Calibration Value (Part 2): " << day1_part2(calibrationDocument);
 
-	//calibrationDocument.close();
+	calibrationDocument.close();
 	return 0;
 }
 
@@ -51,8 +52,7 @@ int findSecondDigit(string line) {
 
 }
 
-int day1_part1(string fileName) {
-	ifstream calibrationDocument(fileName);
+int day1_part1(ifstream& calibrationDocument) {
 	string line;
 	int answer = 0;
 	int firstDigit;
@@ -89,14 +89,11 @@ int day1_part1(string fileName) {
 		calibrationValue = 10 * firstDigit + secondDigit;
 
 		answer += calibrationValue;
-		cout << line << " " << calibrationValue << " " << answer << endl;
 	}
-	calibrationDocument.close();
 	return answer;
 }
 
-int day1_part2(string fileName) {
-	ifstream calibrationDocument(fileName);
+int day1_part2(ifstream& calibrationDocument) {
 	string line;
 	string numbersAlpha[10] = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 	string numbersDecimal[10] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -142,7 +139,6 @@ int day1_part2(string fileName) {
 		calibrationTotal += lineValue;
 	}
 
-	calibrationDocument.close();
 	return calibrationTotal;
 	
 }
