@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cassert>
 
 
 using namespace std;
@@ -37,7 +38,6 @@ int findSecondDigit(string line) {
 
 	for (int i = line.length() - 1; i >= 0; i--) {
 		endPortion = line.substr(i);
-		//cout << line << " Length: " << line.length() << " i: " << i << " substring: " << endPortion << endl;
 		for (string number : numbersAlpha) {
 			if (endPortion.find(number) != string::npos) {
 				return wordValue(number);
@@ -54,43 +54,35 @@ int findSecondDigit(string line) {
 
 int day1_part1(ifstream& calibrationDocument) {
 	string line;
-	int answer = 0;
+	int calibrationTotal = 0;
 	int firstDigit;
 	int secondDigit;
-	bool firstDigitFound = false;
-	bool secondDigitFound = false;
-	int calibrationValue = 0;
+	int lineValue = 0;
 
 	while (!calibrationDocument.eof()) {
 
 		getline(calibrationDocument, line);
-		firstDigitFound = false;
-		secondDigitFound = false;
 		firstDigit = 0;
 		secondDigit = 0;
-		calibrationValue = 0;
 
-		for (auto ch : line) {
-			if (isdigit(ch) && !firstDigitFound) {
-				firstDigitFound = true;
-				firstDigit = static_cast<int>(ch - '0');
-
-			}
-			else if (isdigit(ch) && firstDigitFound) {
-				secondDigitFound = true;
-				secondDigit = static_cast<int>(ch - '0');
+		for (int i = 0; i < line.length(); i++) {
+			if (isdigit(line[i])) {
+				firstDigit = static_cast<int>(line[i] - '0');
+				break;
 			}
 		}
-
-		if (!secondDigitFound) {
-			secondDigit = firstDigit;
+		for (int i = line.length() - 1; i>= 0; i--) {
+			if (isdigit(line[i])) {
+				secondDigit = static_cast<int>(line[i] - '0');
+				break;
+			}
 		}
+		assert(firstDigit != 0 && secondDigit != 0);
+		lineValue = 10 * firstDigit + secondDigit;
 
-		calibrationValue = 10 * firstDigit + secondDigit;
-
-		answer += calibrationValue;
+		calibrationTotal += lineValue;
 	}
-	return answer;
+	return calibrationTotal;
 }
 
 int day1_part2(ifstream& calibrationDocument) {
@@ -102,8 +94,6 @@ int day1_part2(ifstream& calibrationDocument) {
 	int lineValue;
 	int firstDigit;
 	int secondDigit;
-	bool firstDigitFound = false;
-	bool secondDigitFound = false;
 	size_t firstDigitIndex = 99;
 
 
