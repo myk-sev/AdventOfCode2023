@@ -22,41 +22,51 @@ struct idArr {
 
 gameArr readData(string fileName);
 game analyzeGame(string round, game tracker);
+idArr findPossibleGames(gameArr allGames, int redTotal, int greenTotal, int blueTotal);
 
 
 int main() {
-	readData("input.txt");
+	gameArr results = readData("input.txt");
+	for (auto round: results.games) {
+		cout << round.id << ' ' << round.red << ' ' << round.blue << ' ' << round.green << endl;
+	}
+
 } 
 
 gameArr readData(string fileName) {
+	// reads all data into an array of composed of cube counts for each game
 	gameArr inputData;
 	string line;
 	string round;
-	int gameN = 0;
 
 
 	ifstream file(fileName);
 	assert(file.good());
 
-	int counter = 1;
+	int idCount = 1;
+	int gameIndex = 0;
 	while (!file.eof()) {
 		getline(file, line);
 		cout << line << endl;
-		inputData.games[gameN].id = counter;
+		inputData.games[gameIndex].id = idCount;
 
 		line = line.substr(line.find(':') + 2);
 		while (line.find(';') != string::npos) {
 			round = line.substr(0, line.find(';'));
 			line = line.substr(line.find(';') + 2);
-			inputData.games[gameN] = analyzeGame(round, inputData.games[gameN]);
+			inputData.games[gameIndex] = analyzeGame(round, inputData.games[gameIndex]);
 		}
 		round = line; // the last section lacks a semicolor
-		inputData.games[gameN] = analyzeGame(round, inputData.games[gameN]);
+		inputData.games[gameIndex] = analyzeGame(round, inputData.games[gameIndex]);
+
+		gameIndex++;
+		idCount++;
 	}
 	return inputData;
 }
 
 game analyzeGame(string round, game tracker) {
+	//add the cube found from the current round to the cube count for the whole game
 	if (round.find("red") != string::npos) {
 		tracker.red += static_cast<int>(round.substr(round.find("red") - 2, round.find("red") - 1)[0] - '0');
 	}
@@ -67,4 +77,16 @@ game analyzeGame(string round, game tracker) {
 		tracker.blue += static_cast<int>(round.substr(round.find("blue") - 2, round.find("blue") - 1)[0] - '0');
 	}
 	return tracker;
+}
+
+idArr findPossibleGames(gameArr allGames, int redTotal, int greenTotal, int blueTotal) {
+	idArr possibleGames;
+	int counter = 0;
+	for (game round : allGames.games) {
+		if (round.red <= redTotal && round.green < greenTotal && round.blue < blueTotal) {
+			possibleGames.ids[counter] = round.id;
+			counter++;
+		}
+	}
+	return possibleGames;
 }
