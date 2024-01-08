@@ -17,19 +17,30 @@ struct gameArr {
 };
 
 struct idArr {
-	int ids[100];
+	int ids[100] {};
 };
 
 gameArr readData(string fileName);
 game analyzeGame(string round, game tracker);
-idArr findPossibleGames(gameArr allGames, int redTotal, int greenTotal, int blueTotal);
-
+idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue);
 
 int main() {
+	int maxRed = 12;
+	int maxGreen = 13;
+	int maxBlue = 14;
+
 	gameArr results = readData("input.txt");
-	for (auto round: results.games) {
-		cout << round.id << ' ' << round.red << ' ' << round.blue << ' ' << round.green << endl;
+	idArr possibleGames = findPossibleGames(results, maxRed, maxGreen, maxBlue);
+
+	int idSum = 0;
+	for (auto id: possibleGames.ids) {
+		if (id > 0) {
+			cout << "ID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].green << endl;
+			idSum += id;
+		}
 	}
+	cout << endl;
+	cout << "Valid ID Total: " << idSum;
 
 } 
 
@@ -47,7 +58,6 @@ gameArr readData(string fileName) {
 	int gameIndex = 0;
 	while (!file.eof()) {
 		getline(file, line);
-		cout << line << endl;
 		inputData.games[gameIndex].id = idCount;
 
 		line = line.substr(line.find(':') + 2);
@@ -79,13 +89,13 @@ game analyzeGame(string round, game tracker) {
 	return tracker;
 }
 
-idArr findPossibleGames(gameArr allGames, int redTotal, int greenTotal, int blueTotal) {
+idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue) {
 	idArr possibleGames;
-	int counter = 0;
-	for (game round : allGames.games) {
-		if (round.red <= redTotal && round.green < greenTotal && round.blue < blueTotal) {
-			possibleGames.ids[counter] = round.id;
-			counter++;
+	int index = 0;
+	for (game gameData : allGames.games) {
+		if (gameData.red <= maxRed && gameData.green <= maxGreen && gameData.blue <= maxBlue) {
+			possibleGames.ids[index] = gameData.id;
+			index++;
 		}
 	}
 	return possibleGames;
