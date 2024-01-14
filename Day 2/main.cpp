@@ -94,73 +94,66 @@ idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue)
 }
 
 game newAnalyze(string round, game tracker) {
-	string colors[3] = { "", "", "" };
+	// determines if this draw has any values greater than the current max and reports back the max so far
+	string substrings[3] = { "", "", "" };
 	int value;
 	int index = 0;
+
 	while (round.find(',') != string::npos) {
-		colors[index] = round.substr(0, round.find(','));
+		substrings[index] = round.substr(0, round.find(','));
 		index++;
 		round = round.substr(round.find(',') + 2);
 	}
-	colors[2] = round;
+	substrings[2] = round;
 
-	for (string color : colors) {
+	for (string substring : substrings) {
 		value = 0;
-		if (color.find("red") != string::npos) {
-			color = color.substr(0, color.find("red") - 1);
-			if (color.length() == 1) {
-				value = static_cast<int>(color[0] - '0');
+		if (substring.find("red") != string::npos) {
+			substring = substring.substr(0, substring.find("red") - 1);
+			if (substring.length() == 1) {
+				value = static_cast<int>(substring[0] - '0');
 				if (value > tracker.red) {
 					tracker.red = value;
 				}
 			}
-			else if (color.length() == 2) {
-				value = static_cast<int>(color[0] - '0') * 10;
-				value += static_cast<int>(color[1] - '0');
+			else if (substring.length() == 2) {
+				value = static_cast<int>(substring[0] - '0') * 10;
+				value += static_cast<int>(substring[1] - '0');
 				if (value > tracker.red) {
 					tracker.red = value;
 				}
 			}
-			else {
-				cout << "Error. Round analyse generated a final string that is too long." << endl;
-			}
 		}
-		if (color.find("green") != string::npos) {
-			color = color.substr(0, color.find("green") - 1);
-			if (color.length() == 1) {
-				value = static_cast<int>(color[0] - '0');
+		if (substring.find("green") != string::npos) {
+			substring = substring.substr(0, substring.find("green") - 1);
+			if (substring.length() == 1) {
+				value = static_cast<int>(substring[0] - '0');
 				if (value > tracker.green) {
 					tracker.green = value;
 				}
 			}
-			else if (color.length() == 2) {
-				value = static_cast<int>(color[0] - '0') * 10;
-				value += static_cast<int>(color[1] - '0');
+			else if (substring.length() == 2) {
+				value = static_cast<int>(substring[0] - '0') * 10;
+				value += static_cast<int>(substring[1] - '0');
 				if (value > tracker.green) {
 					tracker.green = value;
 				}
 			}
-			else {
-				cout << "Error. Round analyse generated a final string that is too long." << endl;
-			}
 		}
-		if (color.find("blue") != string::npos) {
-			color = color.substr(0, color.find("blue") - 1);
-			if (color.length() == 1) {
-				value = static_cast<int>(color[0] - '0');
+		if (substring.find("blue") != string::npos) {
+			substring = substring.substr(0, substring.find("blue") - 1);
+			if (substring.length() == 1) {
+				value = static_cast<int>(substring[0] - '0');
 				if (value > tracker.blue) {
 					tracker.blue = value;
 				}
 			}
-			else if (color.length() == 2) {
-				value = static_cast<int>(color[0] - '0') * 10;
-				value += static_cast<int>(color[1] - '0');
+			else if (substring.length() == 2) {
+				value = static_cast<int>(substring[0] - '0') * 10;
+				value += static_cast<int>(substring[1] - '0');
 				if (value > tracker.blue) {
 					tracker.blue = value;
 				}
-			}
-			else {
-				cout << "Error. Round analyse generated a final string that is too long." << endl;
 			}
 		}
 	}
