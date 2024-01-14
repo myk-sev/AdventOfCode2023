@@ -21,8 +21,8 @@ struct idArr {
 };
 
 gameArr readData(string fileName);
-game analyzeGame(string round, game tracker);
 idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue);
+game newAnalyze(string round, game tracker);
 
 int main() {
 	int maxRed = 12;
@@ -35,12 +35,13 @@ int main() {
 	int idSum = 0;
 	for (auto id: possibleGames.ids) {
 		if (id > 0) {
-			cout << "ID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].green << endl;
+			cout << "ID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].blue << endl;
 			idSum += id;
 		}
 	}
 	cout << endl;
 	cout << "Valid ID Total: " << idSum;
+	return 0;
 
 } 
 
@@ -60,33 +61,24 @@ gameArr readData(string fileName) {
 		getline(file, line);
 		inputData.games[gameIndex].id = idCount;
 
+		cout << line << endl;
+
 		line = line.substr(line.find(':') + 2);
 		while (line.find(';') != string::npos) {
 			round = line.substr(0, line.find(';'));
 			line = line.substr(line.find(';') + 2);
-			inputData.games[gameIndex] = analyzeGame(round, inputData.games[gameIndex]);
+			inputData.games[gameIndex] = newAnalyze(round, inputData.games[gameIndex]);
 		}
 		round = line; // the last section lacks a semicolor
-		inputData.games[gameIndex] = analyzeGame(round, inputData.games[gameIndex]);
+		inputData.games[gameIndex] = newAnalyze(round, inputData.games[gameIndex]);
+		cout << "\tRed: " << inputData.games[gameIndex].red << endl;
+		cout << "\tGreen: " << inputData.games[gameIndex].green << endl;
+		cout << "\tBlue: " << inputData.games[gameIndex].blue << endl;
 
 		gameIndex++;
 		idCount++;
 	}
 	return inputData;
-}
-
-game analyzeGame(string round, game tracker) {
-	//add the cube found from the current round to the cube count for the whole game
-	if (round.find("red") != string::npos) {
-		tracker.red += static_cast<int>(round.substr(round.find("red") - 2, round.find("red") - 1)[0] - '0');
-	}
-	if (round.find("green") != string::npos) {
-		tracker.green += static_cast<int>(round.substr(round.find("green") - 2, round.find("green") - 1)[0] - '0');
-	}
-	if (round.find("blue") != string::npos) {
-		tracker.blue += static_cast<int>(round.substr(round.find("blue") - 2, round.find("blue") - 1)[0] - '0');
-	}
-	return tracker;
 }
 
 idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue) {
@@ -99,4 +91,78 @@ idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue)
 		}
 	}
 	return possibleGames;
+}
+
+game newAnalyze(string round, game tracker) {
+	string colors[3] = { "", "", "" };
+	int value;
+	int index = 0;
+	while (round.find(',') != string::npos) {
+		colors[index] = round.substr(0, round.find(','));
+		index++;
+		round = round.substr(round.find(',') + 2);
+	}
+	colors[2] = round;
+
+	for (string color : colors) {
+		value = 0;
+		if (color.find("red") != string::npos) {
+			color = color.substr(0, color.find("red") - 1);
+			if (color.length() == 1) {
+				value = static_cast<int>(color[0] - '0');
+				if (value > tracker.red) {
+					tracker.red = value;
+				}
+			}
+			else if (color.length() == 2) {
+				value = static_cast<int>(color[0] - '0') * 10;
+				value += static_cast<int>(color[1] - '0');
+				if (value > tracker.red) {
+					tracker.red = value;
+				}
+			}
+			else {
+				cout << "Error. Round analyse generated a final string that is too long." << endl;
+			}
+		}
+		if (color.find("green") != string::npos) {
+			color = color.substr(0, color.find("green") - 1);
+			if (color.length() == 1) {
+				value = static_cast<int>(color[0] - '0');
+				if (value > tracker.green) {
+					tracker.green = value;
+				}
+			}
+			else if (color.length() == 2) {
+				value = static_cast<int>(color[0] - '0') * 10;
+				value += static_cast<int>(color[1] - '0');
+				if (value > tracker.green) {
+					tracker.green = value;
+				}
+			}
+			else {
+				cout << "Error. Round analyse generated a final string that is too long." << endl;
+			}
+		}
+		if (color.find("blue") != string::npos) {
+			color = color.substr(0, color.find("blue") - 1);
+			if (color.length() == 1) {
+				value = static_cast<int>(color[0] - '0');
+				if (value > tracker.blue) {
+					tracker.blue = value;
+				}
+			}
+			else if (color.length() == 2) {
+				value = static_cast<int>(color[0] - '0') * 10;
+				value += static_cast<int>(color[1] - '0');
+				if (value > tracker.blue) {
+					tracker.blue = value;
+				}
+			}
+			else {
+				cout << "Error. Round analyse generated a final string that is too long." << endl;
+			}
+		}
+	}
+	return tracker;
 }
