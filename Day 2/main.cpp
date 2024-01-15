@@ -25,9 +25,10 @@ gameArr readData(string fileName);
 idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue);
 game analyze(string round, game tracker);
 void part1(int maxRed, int maxGreen, int maxBlue);
+void part2();
 
 int main() {
-	part1(12, 13, 14);
+	part2();
 	return 0;
 
 } 
@@ -129,4 +130,18 @@ void part1(int maxRed, int maxGreen, int maxBlue) {
 	}
 	cout << endl;
 	cout << "Valid ID Total: " << idSum << endl;
+}
+
+void part2() {
+	gameArr results = readData("input.txt");
+	int powerTotal = 0;
+	int power = 0;
+
+	for (game individualGame : results.games) {
+		power = individualGame.red * individualGame.green * individualGame.blue;
+		cout << "ID: " << individualGame.id << " Power: " << power << endl;
+		powerTotal += power;
+	}
+	cout << endl;
+	cout << "Sum of power of sets: " << powerTotal << endl;
 }
