@@ -23,26 +23,11 @@ struct idArr {
 
 gameArr readData(string fileName);
 idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue);
-game newAnalyze(string round, game tracker);
+game analyze(string round, game tracker);
+void part1(int maxRed, int maxGreen, int maxBlue);
 
 int main() {
-	int maxRed = 12;
-	int maxGreen = 13;
-	int maxBlue = 14;
-
-	gameArr results = readData("input.txt");
-	idArr possibleGames = findPossibleGames(results, maxRed, maxGreen, maxBlue);
-
-	int idSum = 0;
-	cout << "Valid Games:" << endl;
-	for (auto id: possibleGames.ids) {
-		if (id > 0) {
-			cout << "\tID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].blue << endl;
-			idSum += id;
-		}
-	}
-	cout << endl;
-	cout << "Valid ID Total: " << idSum << endl;
+	part1(12, 13, 14);
 	return 0;
 
 } 
@@ -67,9 +52,10 @@ gameArr readData(string fileName) {
 		while (line.find(';') != string::npos) {
 			round = line.substr(0, line.find(';'));
 			line = line.substr(line.find(';') + 2);
-			inputData.games[gameIndex] = newAnalyze(round, inputData.games[gameIndex]);
+			inputData.games[gameIndex] = analyze(round, inputData.games[gameIndex]);
 		}
 		round = line; // the last section lacks a semicolor
+		inputData.games[gameIndex] = analyze(round, inputData.games[gameIndex]);
 
 		gameIndex++;
 		idCount++;
@@ -89,7 +75,7 @@ idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue)
 	return possibleGames;
 }
 
-game newAnalyze(string round, game tracker) {
+game analyze(string round, game tracker) {
 	// determines if this draw has any values greater than the current max and reports back the max so far
 	string blockCountStrings[3] = { "", "", "" };
 	int value;
@@ -127,4 +113,20 @@ game newAnalyze(string round, game tracker) {
 		}
 	}
 	return tracker;
+}
+
+void part1(int maxRed, int maxGreen, int maxBlue) {
+	gameArr results = readData("input.txt");
+	idArr possibleGames = findPossibleGames(results, maxRed, maxGreen, maxBlue);
+
+	int idSum = 0;
+	cout << "Valid Games:" << endl;
+	for (auto id : possibleGames.ids) {
+		if (id > 0) {
+			cout << "\tID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].blue << endl;
+			idSum += id;
+		}
+	}
+	cout << endl;
+	cout << "Valid ID Total: " << idSum << endl;
 }
