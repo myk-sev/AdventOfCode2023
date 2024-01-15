@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cassert>
+#include <map>
 
 using namespace std;
 
@@ -33,14 +34,15 @@ int main() {
 	idArr possibleGames = findPossibleGames(results, maxRed, maxGreen, maxBlue);
 
 	int idSum = 0;
+	cout << "Valid Games:" << endl;
 	for (auto id: possibleGames.ids) {
 		if (id > 0) {
-			cout << "ID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].blue << endl;
+			cout << "\tID: " << results.games[id - 1].id << " Reds: " << results.games[id - 1].red << " Greens: " << results.games[id - 1].green << " Blues: " << results.games[id - 1].blue << endl;
 			idSum += id;
 		}
 	}
 	cout << endl;
-	cout << "Valid ID Total: " << idSum;
+	cout << "Valid ID Total: " << idSum << endl;
 	return 0;
 
 } 
@@ -61,8 +63,6 @@ gameArr readData(string fileName) {
 		getline(file, line);
 		inputData.games[gameIndex].id = idCount;
 
-		cout << line << endl;
-
 		line = line.substr(line.find(':') + 2);
 		while (line.find(';') != string::npos) {
 			round = line.substr(0, line.find(';'));
@@ -70,10 +70,6 @@ gameArr readData(string fileName) {
 			inputData.games[gameIndex] = newAnalyze(round, inputData.games[gameIndex]);
 		}
 		round = line; // the last section lacks a semicolor
-		inputData.games[gameIndex] = newAnalyze(round, inputData.games[gameIndex]);
-		cout << "\tRed: " << inputData.games[gameIndex].red << endl;
-		cout << "\tGreen: " << inputData.games[gameIndex].green << endl;
-		cout << "\tBlue: " << inputData.games[gameIndex].blue << endl;
 
 		gameIndex++;
 		idCount++;
@@ -95,64 +91,37 @@ idArr findPossibleGames(gameArr allGames, int maxRed, int maxGreen, int maxBlue)
 
 game newAnalyze(string round, game tracker) {
 	// determines if this draw has any values greater than the current max and reports back the max so far
-	string substrings[3] = { "", "", "" };
+	string blockCountStrings[3] = { "", "", "" };
 	int value;
 	int index = 0;
 
+	map<string, int*> trackers;
+	trackers["red"] = &tracker.red;
+	trackers["green"] = &tracker.green;
+	trackers["blue"] = &tracker.blue;
+
 	while (round.find(',') != string::npos) {
-		substrings[index] = round.substr(0, round.find(','));
+		blockCountStrings[index] = round.substr(0, round.find(','));
 		index++;
 		round = round.substr(round.find(',') + 2);
 	}
-	substrings[2] = round;
+	blockCountStrings[2] = round;
 
-	for (string substring : substrings) {
+	for (string blockCountStr : blockCountStrings) {
 		value = 0;
-		if (substring.find("red") != string::npos) {
-			substring = substring.substr(0, substring.find("red") - 1);
-			if (substring.length() == 1) {
-				value = static_cast<int>(substring[0] - '0');
-				if (value > tracker.red) {
-					tracker.red = value;
+		for (auto pair : trackers) {
+			string color = pair.first;
+			if (blockCountStr.find(color) != string::npos) {
+				string numberStr = blockCountStr.substr(0, blockCountStr.find(color) - 1);
+				if (numberStr.length() == 1) {
+					value = static_cast<int>(numberStr[0] - '0');
 				}
-			}
-			else if (substring.length() == 2) {
-				value = static_cast<int>(substring[0] - '0') * 10;
-				value += static_cast<int>(substring[1] - '0');
-				if (value > tracker.red) {
-					tracker.red = value;
+				else if (numberStr.length() == 2) {
+					value = static_cast<int>(numberStr[0] - '0') * 10;
+					value += static_cast<int>(numberStr[1] - '0');
 				}
-			}
-		}
-		if (substring.find("green") != string::npos) {
-			substring = substring.substr(0, substring.find("green") - 1);
-			if (substring.length() == 1) {
-				value = static_cast<int>(substring[0] - '0');
-				if (value > tracker.green) {
-					tracker.green = value;
-				}
-			}
-			else if (substring.length() == 2) {
-				value = static_cast<int>(substring[0] - '0') * 10;
-				value += static_cast<int>(substring[1] - '0');
-				if (value > tracker.green) {
-					tracker.green = value;
-				}
-			}
-		}
-		if (substring.find("blue") != string::npos) {
-			substring = substring.substr(0, substring.find("blue") - 1);
-			if (substring.length() == 1) {
-				value = static_cast<int>(substring[0] - '0');
-				if (value > tracker.blue) {
-					tracker.blue = value;
-				}
-			}
-			else if (substring.length() == 2) {
-				value = static_cast<int>(substring[0] - '0') * 10;
-				value += static_cast<int>(substring[1] - '0');
-				if (value > tracker.blue) {
-					tracker.blue = value;
+				if (value > *trackers[color]) {
+					*trackers[color] = value;
 				}
 			}
 		}
